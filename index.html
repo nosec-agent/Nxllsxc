@@ -1,41 +1,45 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NxSxc Messenger</title>
+    <title>NxllSxc Messenger — Zero-Trust Network</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
         
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #000000;
-            color: #e5e5e5;
+            color: #f1f5f9;
             overflow: hidden;
         }
 
-        /* Custom Scrollbar */
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Custom Scrollbars */
         ::-webkit-scrollbar {
-            width: 5px;
+            width: 4px;
         }
         ::-webkit-scrollbar-track {
             background: #000000;
         }
         ::-webkit-scrollbar-thumb {
-            background: #222;
+            background: #1e293b;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #444;
+            background: #334155;
         }
 
         /* Animations */
         .fade-in {
-            animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .slide-up {
@@ -43,7 +47,7 @@
         }
 
         .pulse-glow {
-            animation: pulseGlow 2s infinite alternate;
+            animation: pulseGlow 2.5s infinite alternate;
         }
 
         @keyframes fadeIn {
@@ -52,90 +56,142 @@
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(24px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes pulseGlow {
-            0% { box-shadow: 0 0 5px rgba(255, 255, 255, 0.1); }
-            100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+            0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.05), inset 0 0 10px rgba(255, 255, 255, 0.02); }
+            100% { box-shadow: 0 0 25px rgba(255, 255, 255, 0.25), inset 0 0 15px rgba(255, 255, 255, 0.08); }
         }
 
-        /* Glassmorphic Dark Card */
+        /* OLED Glass Card */
         .glass-panel {
-            background: rgba(12, 12, 12, 0.85);
-            backdrop-filter: blur(12px);
+            background: rgba(10, 10, 10, 0.92);
+            backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .chat-bubble-sent {
-            background: linear-gradient(135deg, #1f1f1f 0%, #111111 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, #18181b 0%, #09090b 100%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
         .chat-bubble-received {
-            background: #0a0a0a;
+            background: #050505;
             border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .code-input-focused {
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
         }
     </style>
 </head>
-<body class="h-screen w-screen flex items-center justify-center bg-black text-white">
+<body class="h-screen w-screen flex items-center justify-center bg-black text-slate-100">
 
-    <!-- LOGIN / REGISTRIERUNG CONTAINER -->
-    <div id="auth-screen" class="w-full max-w-md p-6 slide-up z-50">
+    <!-- STEP 1: 97-CHARACTER ACCESS GATEKEEPER -->
+    <div id="gate-screen" class="w-full max-w-xl p-6 slide-up z-50">
         <div class="glass-panel p-8 rounded-3xl shadow-2xl flex flex-col items-center border border-neutral-800">
+            
             <!-- LOGO SVG (Graffiti / Slashed Circle) -->
-            <div class="w-24 h-24 mb-4 relative flex items-center justify-center pulse-glow rounded-full bg-black border border-neutral-800">
-                <svg viewBox="0 0 100 100" class="w-20 h-20 stroke-white fill-none stroke-[6] stroke-linecap-round stroke-linejoin-round">
+            <div class="w-20 h-20 mb-4 relative flex items-center justify-center pulse-glow rounded-full bg-black border border-neutral-800">
+                <svg viewBox="0 0 100 100" class="w-16 h-16 stroke-white fill-none stroke-[6] stroke-linecap-round stroke-linejoin-round">
                     <circle cx="50" cy="50" r="35" />
                     <line x1="22" y1="78" x2="78" y2="22" />
-                    <!-- Spray Drips Simulation -->
                     <circle cx="35" cy="87" r="1.5" class="fill-white stroke-none" />
                     <circle cx="36" cy="92" r="1" class="fill-white stroke-none" />
                     <circle cx="48" cy="89" r="1.2" class="fill-white stroke-none" />
                 </svg>
             </div>
 
-            <h1 class="text-3xl font-extrabold tracking-wider text-white mb-1">NxSxc</h1>
-            <p class="text-xs text-neutral-500 mb-6 uppercase tracking-widest">Zero-Knowledge Encrypted</p>
-
-            <!-- AUTH TAB SWITCH -->
-            <div class="flex w-full bg-neutral-900/80 p-1 rounded-xl mb-6 border border-neutral-800">
-                <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-neutral-800 text-white transition-all">Anmelden</button>
-                <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-neutral-400 hover:text-white transition-all">Registrieren</button>
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-black tracking-wider text-white uppercase font-mono">NxllSxc Gateway</h1>
+                <p class="text-xs text-neutral-400 mt-1">Enter your <span class="text-sky-400 font-bold font-mono">97-Character</span> Master Access Key to unlock node</p>
             </div>
 
-            <!-- FORM -->
-            <form id="auth-form" onsubmit="handleAuth(event)" class="w-full flex flex-col gap-4">
+            <form onsubmit="verifyGateKey(event)" class="w-full flex flex-col gap-4">
                 <div>
-                    <label class="block text-xs text-neutral-400 mb-1 ml-1">E-Mail</label>
-                    <input type="email" id="auth-email" required placeholder="name@domain.com" class="w-full bg-neutral-950 border border-neutral-800 focus:border-white text-white rounded-xl px-4 py-3 text-sm outline-none transition-all">
+                    <div class="flex justify-between items-center mb-1 px-1 text-xs">
+                        <label class="text-neutral-400 font-mono">Master Passcode</label>
+                        <span id="char-counter" class="font-mono text-neutral-500 font-bold">0 / 97</span>
+                    </div>
+                    
+                    <textarea id="gate-key-input" rows="3" oninput="updateCharCount()" required placeholder="Paste your 97-character security key here..." class="w-full bg-black border border-neutral-800 focus:border-sky-500 text-sky-400 font-mono text-xs rounded-2xl p-4 outline-none transition-all resize-none leading-relaxed tracking-wider"></textarea>
+                    
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-neutral-900 h-1.5 rounded-full mt-2 overflow-hidden border border-neutral-800">
+                        <div id="gate-progress" class="bg-sky-500 h-full w-0 transition-all duration-200"></div>
+                    </div>
                 </div>
 
-                <div id="username-field" class="hidden">
-                    <label class="block text-xs text-neutral-400 mb-1 ml-1">Benutzername</label>
-                    <input type="text" id="auth-username" placeholder="@nutzername" class="w-full bg-neutral-950 border border-neutral-800 focus:border-white text-white rounded-xl px-4 py-3 text-sm outline-none transition-all">
+                <div id="gate-error" class="hidden text-xs text-rose-500 bg-rose-950/40 border border-rose-900/50 p-3 rounded-xl flex items-center gap-2">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 shrink-0"></i>
+                    <span id="gate-error-text">Access Denied: Code must be exactly 97 characters long.</span>
                 </div>
 
-                <div>
-                    <label class="block text-xs text-neutral-400 mb-1 ml-1">Passwort</label>
-                    <input type="password" id="auth-password" required placeholder="••••••••••••" class="w-full bg-neutral-950 border border-neutral-800 focus:border-white text-white rounded-xl px-4 py-3 text-sm outline-none transition-all">
-                </div>
-
-                <button type="submit" id="auth-submit-btn" class="w-full bg-white hover:bg-neutral-200 text-black font-bold py-3 rounded-xl mt-2 transition-all flex items-center justify-center gap-2 shadow-lg">
-                    <span>Eintreten</span>
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                <button type="submit" class="w-full bg-white hover:bg-neutral-200 text-black font-extrabold py-3.5 rounded-2xl mt-1 transition-all flex items-center justify-center gap-2 shadow-xl font-mono text-xs uppercase tracking-wider">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    <span>Verify Access Key</span>
                 </button>
             </form>
 
-            <div class="mt-6 flex items-center gap-2 text-[11px] text-emerald-500 bg-emerald-950/30 px-3 py-1.5 rounded-full border border-emerald-900/50">
-                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-                <span>E2EE Schlüsselgenerierung im Browser</span>
+            <div class="mt-6 flex items-center gap-2 text-[11px] text-neutral-500 font-mono">
+                <i data-lucide="lock" class="w-3.5 h-3.5 text-neutral-400"></i>
+                <span>Strict 97-Char Hardened Token Authentication</span>
             </div>
         </div>
     </div>
 
-    <!-- MAIN MESSENGER INTERFACE (Telegram Style) -->
+    <!-- STEP 2: USER AUTHENTICATION (LOGIN / REGISTER) -->
+    <div id="auth-screen" class="hidden w-full max-w-md p-6 slide-up z-50">
+        <div class="glass-panel p-8 rounded-3xl shadow-2xl flex flex-col items-center border border-neutral-800">
+            
+            <div class="w-16 h-16 mb-3 relative flex items-center justify-center rounded-full bg-black border border-neutral-800">
+                <svg viewBox="0 0 100 100" class="w-12 h-12 stroke-white fill-none stroke-[6]">
+                    <circle cx="50" cy="50" r="35" />
+                    <line x1="22" y1="78" x2="78" y2="22" />
+                </svg>
+            </div>
+
+            <h2 class="text-2xl font-black tracking-wider text-white mb-1">NxllSxc</h2>
+            <p class="text-[11px] text-emerald-400 mb-6 uppercase tracking-widest font-mono flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                Gate Authenticated
+            </p>
+
+            <!-- AUTH TAB SWITCH -->
+            <div class="flex w-full bg-neutral-900/80 p-1 rounded-xl mb-6 border border-neutral-800">
+                <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-neutral-800 text-white transition-all">Sign In</button>
+                <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-2 text-xs font-bold rounded-lg text-neutral-400 hover:text-white transition-all">Register</button>
+            </div>
+
+            <!-- AUTH FORM -->
+            <form id="auth-form" onsubmit="handleAuth(event)" class="w-full flex flex-col gap-4">
+                <div>
+                    <label class="block text-xs text-neutral-400 mb-1 ml-1 font-mono">Email Address</label>
+                    <input type="email" id="auth-email" required placeholder="operator@nullsec.network" class="w-full bg-neutral-950 border border-neutral-800 focus:border-white text-white rounded-xl px-4 py-3 text-xs outline-none transition-all">
+                </div>
+
+                <div id="username-field" class="hidden">
+                    <label class="block text-xs text-neutral-400 mb-1 ml-1 font-mono">Handle / Username</label>
+                    <input type="text" id="auth-username" placeholder="@ghost_operator" class="w-full bg-neutral-950 border border-neutral-800 focus:border-white text-white rounded-xl px-4 py-3 text-xs outline-none transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-neutral-400 mb-1 ml-1 font-mono">Master Password</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••••••••••" class="w-full bg-neutral-950 border border-neutral-800 focus:border-white text-white rounded-xl px-4 py-3 text-xs outline-none transition-all">
+                </div>
+
+                <button type="submit" id="auth-submit-btn" class="w-full bg-white hover:bg-neutral-200 text-black font-extrabold py-3 rounded-xl mt-2 transition-all flex items-center justify-center gap-2 shadow-lg text-xs uppercase tracking-wider">
+                    <span>Initialize Session</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- STEP 3: MAIN MESSENGER INTERFACE -->
     <div id="app-screen" class="hidden w-full h-full flex fade-in">
         
         <!-- SIDEBAR -->
@@ -150,33 +206,33 @@
                         </svg>
                     </div>
                     <div>
-                        <h2 class="font-bold text-sm tracking-wide">NxSxc</h2>
-                        <span id="current-user-display" class="text-xs text-emerald-400 flex items-center gap-1">
+                        <h2 class="font-bold text-sm tracking-wide">NxllSxc</h2>
+                        <span id="current-user-display" class="text-xs text-emerald-400 flex items-center gap-1 font-mono">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                            Anonym & Verschlüsselt
+                            Encrypted Node
                         </span>
                     </div>
                 </div>
-                <button onclick="logout()" class="p-2 hover:bg-neutral-900 rounded-xl text-neutral-400 hover:text-white transition-all" title="Abmelden">
-                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                <button onclick="logout()" class="p-2 hover:bg-neutral-900 rounded-xl text-neutral-400 hover:text-white transition-all" title="Disconnect Session">
+                    <i data-lucide="power" class="w-5 h-5"></i>
                 </button>
             </div>
 
-            <!-- Suchleiste -->
+            <!-- Search Bar -->
             <div class="p-3">
                 <div class="relative">
                     <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-neutral-500"></i>
-                    <input type="text" placeholder="Chats durchsuchen..." class="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-700">
+                    <input type="text" placeholder="Search encrypted channels..." class="w-full bg-neutral-950 border border-neutral-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-700">
                 </div>
             </div>
 
-            <!-- TELEGRAM CATEGORY TABS -->
+            <!-- CATEGORY TABS (TELEGRAM STYLE) -->
             <div class="flex border-b border-neutral-900 px-2 text-xs font-semibold">
                 <button onclick="switchCategory('private')" id="cat-private" class="flex-1 py-3 border-b-2 border-white text-white text-center transition-all flex justify-center items-center gap-1.5">
-                    <i data-lucide="user" class="w-3.5 h-3.5"></i> Privat
+                    <i data-lucide="user" class="w-3.5 h-3.5"></i> Private
                 </button>
                 <button onclick="switchCategory('group')" id="cat-group" class="flex-1 py-3 border-b-2 border-transparent text-neutral-500 hover:text-neutral-300 text-center transition-all flex justify-center items-center gap-1.5">
-                    <i data-lucide="users" class="w-3.5 h-3.5"></i> Gruppen
+                    <i data-lucide="users" class="w-3.5 h-3.5"></i> Groups
                 </button>
                 <button onclick="switchCategory('global')" id="cat-global" class="flex-1 py-3 border-b-2 border-transparent text-neutral-500 hover:text-neutral-300 text-center transition-all flex justify-center items-center gap-1.5">
                     <i data-lucide="globe" class="w-3.5 h-3.5"></i> Global
@@ -185,65 +241,65 @@
 
             <!-- CHAT LIST -->
             <div id="chat-list" class="flex-1 overflow-y-auto divide-y divide-neutral-900/50">
-                <!-- Dynamisch geladene Chats -->
+                <!-- Dynamically Rendered Chats -->
             </div>
 
-            <!-- Network Status Footer -->
+            <!-- System Status Footer -->
             <div class="p-3 border-t border-neutral-900 text-[11px] text-neutral-500 flex justify-between items-center bg-neutral-950">
-                <span class="flex items-center gap-1.5">
-                    <i data-lucide="lock" class="w-3 h-3 text-emerald-400"></i> Zero-Metadata Node
+                <span class="flex items-center gap-1.5 font-mono">
+                    <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-400"></i> Zero-Knowledge Mesh
                 </span>
-                <span class="font-mono text-[10px] text-neutral-600">v2.4-AES-GCM</span>
+                <span class="font-mono text-[10px] text-neutral-600">v3.0-E2EE</span>
             </div>
         </aside>
 
-        <!-- CHAT AREA -->
+        <!-- CHAT STREAM AREA -->
         <main class="flex-1 flex flex-col bg-black relative">
-            <!-- Active Chat Header -->
-            <header id="chat-header" class="p-4 border-b border-neutral-900 flex items-center justify-between bg-black/50 backdrop-blur-md">
+            <!-- Header -->
+            <header id="chat-header" class="p-4 border-b border-neutral-900 flex items-center justify-between bg-black/60 backdrop-blur-md">
                 <div class="flex items-center gap-3">
-                    <div id="chat-avatar" class="w-10 h-10 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center font-bold text-white">
+                    <div id="chat-avatar" class="w-10 h-10 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center font-bold text-white font-mono">
                         #
                     </div>
                     <div>
-                        <h3 id="chat-title" class="font-bold text-sm">Chat auswählen</h3>
+                        <h3 id="chat-title" class="font-bold text-sm">Select Channel</h3>
                         <p id="chat-subtitle" class="text-xs text-neutral-500 flex items-center gap-1">
-                            Wähle einen Unterhaltungskanal aus
+                            Choose a conversation channel to start messaging
                         </p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button class="p-2 hover:bg-neutral-900 rounded-xl text-neutral-400 hover:text-white" title="Verschlüsselung verifizieren">
+                    <button onclick="triggerPanicWipe()" class="p-2 hover:bg-rose-950/50 hover:text-rose-400 rounded-xl text-neutral-400 transition-all" title="Panic Wipe Channel">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                    <button class="p-2 hover:bg-neutral-900 rounded-xl text-neutral-400 hover:text-white transition-all" title="Security Verification">
                         <i data-lucide="key" class="w-5 h-5"></i>
                     </button>
-                    <button class="p-2 hover:bg-neutral-900 rounded-xl text-neutral-400 hover:text-white" title="Selbstzerstörende Nachrichten">
-                        <i data-lucide="timer" class="w-5 h-5"></i>
-                    </button>
-                    <button class="p-2 hover:bg-neutral-900 rounded-xl text-neutral-400 hover:text-white" title="Optionen">
+                    <button class="p-2 hover:bg-neutral-900 rounded-xl text-neutral-400 hover:text-white transition-all" title="Channel Options">
                         <i data-lucide="more-vertical" class="w-5 h-5"></i>
                     </button>
                 </div>
             </header>
 
-            <!-- Messages Stream -->
+            <!-- Messages Stream Container -->
             <div id="messages-container" class="flex-1 p-4 overflow-y-auto space-y-4 flex flex-col">
                 <div class="m-auto text-center p-8 max-w-sm rounded-2xl border border-neutral-900 bg-neutral-950/50">
-                    <i data-lucide="shield-alert" class="w-10 h-10 mx-auto text-neutral-600 mb-3"></i>
-                    <h4 class="font-bold text-neutral-300 text-sm mb-1">Keine Metadaten-Speicherung</h4>
-                    <p class="text-xs text-neutral-500 leading-relaxed">Alle Nachrichten werden vor dem Senden mit AES-256-GCM verschlüsselt. Weder NxSxc noch Dritte können sehen, wer mit wem schreibt.</p>
+                    <i data-lucide="shield-check" class="w-10 h-10 mx-auto text-neutral-600 mb-3"></i>
+                    <h4 class="font-bold text-neutral-300 text-sm mb-1">Zero Metadata Footprint</h4>
+                    <p class="text-xs text-neutral-500 leading-relaxed">All messages are client-side encrypted with AES-256-GCM. Neither NxllSxc nor third parties can intercept or link identity metadata.</p>
                 </div>
             </div>
 
-            <!-- Message Input Bar -->
+            <!-- Bottom Message Bar -->
             <footer class="p-4 border-t border-neutral-900 bg-black">
                 <form id="message-form" onsubmit="sendMessage(event)" class="flex items-center gap-2">
                     <button type="button" class="p-3 hover:bg-neutral-900 text-neutral-400 hover:text-white rounded-xl transition-all">
                         <i data-lucide="paperclip" class="w-5 h-5"></i>
                     </button>
                     <div class="flex-1 relative">
-                        <input type="text" id="message-input" autocomplete="off" placeholder="Ende-zu-Ende verschlüsselte Nachricht..." class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-neutral-600 transition-all">
-                        <span class="absolute right-3 top-3.5 text-[10px] bg-neutral-900 text-neutral-400 px-2 py-0.5 rounded border border-neutral-800 font-mono">AES-256</span>
+                        <input type="text" id="message-input" autocomplete="off" placeholder="Write an end-to-end encrypted message..." class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-neutral-600 transition-all">
+                        <span class="absolute right-3 top-3.5 text-[9px] bg-neutral-900 text-emerald-400 px-2 py-0.5 rounded border border-neutral-800 font-mono">AES-GCM-256</span>
                     </div>
                     <button type="submit" class="p-3 bg-white hover:bg-neutral-200 text-black rounded-xl font-bold transition-all flex items-center justify-center shadow-lg">
                         <i data-lucide="send" class="w-5 h-5"></i>
@@ -254,41 +310,87 @@
     </div>
 
     <script>
+        // --- MASTER ACCESS KEY (EXACTLY 97 CHARACTERS) ---
+        const MASTER_GATE_KEY = "NXLLSXC-97-KEY-8492-01A9-F281-C073-E591-B240-9168-3D7F-114E-0299-A133-B8C7-105D-2E8B-411A-9009-C8";
+
         // --- APP STATE ---
         let currentAuthMode = 'login';
         let currentUser = null;
         let activeCategory = 'private';
         let activeChatId = 'global-1';
-        let userKey = null; // CryptoKey Object
+        let userKey = null;
 
-        // Demo Storage Data Structure
+        // Mock Channels Data
         const mockChats = {
             private: [
-                { id: 'priv-1', name: 'Phantom_99', avatar: 'P', lastMsg: 'Verschlüsselter Key wurde ausgetauscht.', time: '13:21', unread: 1 },
-                { id: 'priv-2', name: 'Cipher_Ghost', avatar: 'C', lastMsg: 'Treffen im Anonym-Channel.', time: 'Gestern', unread: 0 }
+                { id: 'priv-1', name: 'Phantom_99', avatar: 'P', lastMsg: 'Symmetric encryption key exchanged.', time: '13:21', unread: 1 },
+                { id: 'priv-2', name: 'Cipher_Ghost', avatar: 'C', lastMsg: 'Rendezvous at dark node 4.', time: 'Yesterday', unread: 0 }
             ],
             group: [
-                { id: 'grp-1', name: 'Dev Ops (Zero-Knowledge)', avatar: 'D', lastMsg: 'Sicherheits-Audit bestanden.', time: '11:05', unread: 3 },
-                { id: 'grp-2', name: 'Darknet Protocol', avatar: 'N', lastMsg: 'Neue Knotenpunkte sind online.', time: 'Mo', unread: 0 }
+                { id: 'grp-1', name: 'Dev Ops (Zero-Knowledge)', avatar: 'D', lastMsg: 'Audited source code deployed.', time: '11:05', unread: 3 },
+                { id: 'grp-2', name: 'Mesh Protocol', avatar: 'M', lastMsg: 'New relay nodes online.', time: 'Mon', unread: 0 }
             ],
             global: [
-                { id: 'global-1', name: 'Globaler Anonym Chat', avatar: 'G', lastMsg: 'Willkommen bei NxSxc!', time: 'Jetzt', unread: 0 }
+                { id: 'global-1', name: 'Global Anonym Network', avatar: 'G', lastMsg: 'Welcome to NxllSxc Secure Network!', time: 'Now', unread: 0 }
             ]
         };
 
         const mockMessages = {
             'global-1': [
-                { sender: 'System', text: 'Willkommen beim globalen NxSxc Netzwerk.', time: '12:00', isMe: false, encrypted: false },
-                { sender: 'ZeroUser', text: 'Ist das Netzwerk komplett ohne Metadaten?', time: '12:02', isMe: false, encrypted: true }
+                { sender: 'System Node', text: 'Welcome to NxllSxc Encrypted Network.', time: '12:00', isMe: false },
+                { sender: 'ZeroOperator', text: 'Is metadata stripping active on all nodes?', time: '12:02', isMe: false }
             ]
         };
 
         // --- INIT ---
         window.onload = () => {
             lucide.createIcons();
-            // Automatisch Demo-Chats rendern
-            renderChats();
         };
+
+        // --- GATEKEEPER VERIFICATION ---
+        function updateCharCount() {
+            const val = document.getElementById('gate-key-input').value.trim();
+            const count = val.length;
+            const counter = document.getElementById('char-counter');
+            const progress = document.getElementById('gate-progress');
+            
+            counter.innerText = `${count} / 97`;
+            
+            let percentage = Math.min(100, (count / 97) * 100);
+            progress.style.width = `${percentage}%`;
+
+            if (count === 97) {
+                counter.className = "font-mono text-emerald-400 font-bold";
+                progress.className = "bg-emerald-500 h-full transition-all duration-200";
+            } else {
+                counter.className = "font-mono text-neutral-500 font-bold";
+                progress.className = "bg-sky-500 h-full transition-all duration-200";
+            }
+        }
+
+        function verifyGateKey(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('gate-key-input').value.trim();
+            const errorBox = document.getElementById('gate-error');
+            const errorText = document.getElementById('gate-error-text');
+
+            if (inputVal.length !== 97) {
+                errorBox.classList.remove('hidden');
+                errorText.innerText = `Invalid length (${inputVal.length} chars). Key must be EXACTLY 97 characters long!`;
+                return;
+            }
+
+            if (inputVal !== MASTER_GATE_KEY) {
+                errorBox.classList.remove('hidden');
+                errorText.innerText = `Access Denied: Unrecognized 97-Character Master Key.`;
+                return;
+            }
+
+            // Key Validated -> Proceed to Authentication
+            errorBox.classList.add('hidden');
+            document.getElementById('gate-screen').classList.add('hidden');
+            document.getElementById('auth-screen').classList.remove('hidden');
+        }
 
         // --- AUTH SYSTEM ---
         function switchAuthTab(mode) {
@@ -300,76 +402,40 @@
 
             if (mode === 'register') {
                 usernameField.classList.remove('hidden');
-                regBtn.className = 'flex-1 py-2 text-sm font-semibold rounded-lg bg-neutral-800 text-white transition-all';
-                loginBtn.className = 'flex-1 py-2 text-sm font-semibold rounded-lg text-neutral-400 hover:text-white transition-all';
-                submitBtnText.innerText = 'Konto Erstellen';
+                regBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-neutral-800 text-white transition-all';
+                loginBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-neutral-400 hover:text-white transition-all';
+                submitBtnText.innerText = 'Create Encrypted Account';
             } else {
                 usernameField.classList.add('hidden');
-                loginBtn.className = 'flex-1 py-2 text-sm font-semibold rounded-lg bg-neutral-800 text-white transition-all';
-                regBtn.className = 'flex-1 py-2 text-sm font-semibold rounded-lg text-neutral-400 hover:text-white transition-all';
-                submitBtnText.innerText = 'Eintreten';
+                loginBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg bg-neutral-800 text-white transition-all';
+                regBtn.className = 'flex-1 py-2 text-xs font-bold rounded-lg text-neutral-400 hover:text-white transition-all';
+                submitBtnText.innerText = 'Initialize Session';
             }
         }
 
         async function handleAuth(e) {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
-            const password = document.getElementById('auth-password').value;
             const username = document.getElementById('auth-username').value || email.split('@')[0];
-
-            // Client-seitigen AES Key aus Passwort ableiten (Echtzeit-Kryptographie)
-            userKey = await generateMasterKey(password, email);
 
             currentUser = { email, username };
             
-            document.getElementById('current-user-display').innerText = `@${username} (Verschlüsselt)`;
+            document.getElementById('current-user-display').innerText = `@${username} (Active)`;
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app-screen').classList.remove('hidden');
 
-            selectChat('global-1', 'Globaler Anonym Chat', 'G');
+            selectChat('global-1', 'Global Anonym Network', 'G');
         }
 
         function logout() {
             currentUser = null;
-            userKey = null;
             document.getElementById('app-screen').classList.add('hidden');
-            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('gate-screen').classList.remove('hidden');
+            document.getElementById('gate-key-input').value = '';
+            updateCharCount();
         }
 
-        // --- WEBCRYPTO (E2EE ENGINE) ---
-        async function generateMasterKey(password, salt) {
-            const enc = new TextEncoder();
-            const keyMaterial = await window.crypto.subtle.importKey(
-                "raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveBits", "deriveKey"]
-            );
-            return window.crypto.subtle.deriveKey(
-                {
-                    name: "PBKDF2",
-                    salt: enc.encode(salt),
-                    iterations: 100000,
-                    hash: "SHA-256"
-                },
-                keyMaterial,
-                { name: "AES-GCM", length: 256 },
-                true,
-                ["encrypt", "decrypt"]
-            );
-        }
-
-        async function encryptText(plainText) {
-            if (!userKey) return plainText;
-            const enc = new TextEncoder();
-            const iv = window.crypto.getRandomValues(new Uint8Array(12));
-            const encryptedBuffer = await window.crypto.subtle.encrypt(
-                { name: "AES-GCM", iv: iv }, userKey, enc.encode(plainText)
-            );
-            return {
-                ciphertext: btoa(String.fromCharCode(...new Uint8Array(encryptedBuffer))),
-                iv: btoa(String.fromCharCode(...iv))
-            };
-        }
-
-        // --- TELEGRAM CATEGORY SWITCHING ---
+        // --- TELEGRAM TABS & CHATS ---
         function switchCategory(cat) {
             activeCategory = cat;
             ['private', 'group', 'global'].forEach(c => {
@@ -394,20 +460,20 @@
                 item.onclick = () => selectChat(chat.id, chat.name, chat.avatar);
 
                 item.innerHTML = `
-                    <div class="w-11 h-11 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center font-bold text-white relative">
+                    <div class="w-10 h-10 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center font-bold text-white relative font-mono">
                         ${chat.avatar}
-                        <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-black rounded-full"></span>
+                        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-black rounded-full"></span>
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="flex justify-between items-baseline mb-1">
-                            <h4 class="text-sm font-semibold text-white truncate">${chat.name}</h4>
+                            <h4 class="text-xs font-semibold text-white truncate">${chat.name}</h4>
                             <span class="text-[10px] text-neutral-500 font-mono">${chat.time}</span>
                         </div>
                         <p class="text-xs text-neutral-400 truncate flex items-center gap-1">
                             <i data-lucide="lock" class="w-3 h-3 inline text-neutral-600"></i> ${chat.lastMsg}
                         </p>
                     </div>
-                    ${chat.unread > 0 ? `<span class="bg-white text-black text-[10px] font-extrabold px-1.5 py-0.5 rounded-full">${chat.unread}</span>` : ''}
+                    ${chat.unread > 0 ? `<span class="bg-white text-black text-[10px] font-extrabold px-1.5 py-0.5 rounded-full font-mono">${chat.unread}</span>` : ''}
                 `;
                 chatList.appendChild(item);
             });
@@ -418,13 +484,12 @@
             activeChatId = id;
             document.getElementById('chat-title').innerText = name;
             document.getElementById('chat-avatar').innerText = avatar;
-            document.getElementById('chat-subtitle').innerText = 'Ende-zu-Ende verschlüsselte Verbindung';
+            document.getElementById('chat-subtitle').innerText = 'End-to-End Encrypted Secure Channel';
             
             renderChats();
             renderMessages();
         }
 
-        // --- MESSAGING ENGINE ---
         function renderMessages() {
             const container = document.getElementById('messages-container');
             container.innerHTML = '';
@@ -434,8 +499,8 @@
             if (msgs.length === 0) {
                 container.innerHTML = `
                     <div class="m-auto text-center p-6 rounded-2xl border border-neutral-900 bg-neutral-950/30">
-                        <i data-lucide="shield-check" class="w-8 h-8 mx-auto text-emerald-500 mb-2"></i>
-                        <p class="text-xs text-neutral-400">Keine Nachrichten vorhanden. Schreibe eine Ende-zu-Ende verschlüsselte Nachricht.</p>
+                        <i data-lucide="shield" class="w-8 h-8 mx-auto text-emerald-500 mb-2"></i>
+                        <p class="text-xs text-neutral-400">No message history. Write a secure encrypted message.</p>
                     </div>
                 `;
             } else {
@@ -446,7 +511,7 @@
                     msgDiv.innerHTML = `
                         <span class="text-[10px] text-neutral-500 mb-1 px-1 font-mono">${m.sender}</span>
                         <div class="p-3.5 rounded-2xl ${m.isMe ? 'chat-bubble-sent text-white rounded-br-xs' : 'chat-bubble-received text-neutral-200 rounded-bl-xs'} relative group">
-                            <p class="text-sm leading-relaxed">${escapeHtml(m.text)}</p>
+                            <p class="text-xs leading-relaxed">${escapeHtml(m.text)}</p>
                             <div class="mt-1 flex items-center justify-end gap-1 text-[9px] text-neutral-500 font-mono">
                                 <span>${m.time}</span>
                                 <i data-lucide="check-check" class="w-3 h-3 text-emerald-400"></i>
@@ -461,15 +526,12 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        async function sendMessage(e) {
+        function sendMessage(e) {
             e.preventDefault();
             const input = document.getElementById('message-input');
             const text = input.value.trim();
 
             if (!text) return;
-
-            // In Echtzeit verschlüsseln (Simulation des Zero-Knowledge Payloads)
-            const encryptedPayload = await encryptText(text);
 
             if (!mockMessages[activeChatId]) {
                 mockMessages[activeChatId] = [];
@@ -478,16 +540,13 @@
             const now = new Date();
             const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
-            // Nachricht hinzufügen
             mockMessages[activeChatId].push({
-                sender: currentUser ? currentUser.username : 'Anonym',
+                sender: currentUser ? currentUser.username : 'Anonymous',
                 text: text,
-                payload: encryptedPayload,
                 time: timeStr,
                 isMe: true
             });
 
-            // Letzte Nachricht im Chat-Tab aktualisieren
             for (let cat in mockChats) {
                 let found = mockChats[cat].find(c => c.id === activeChatId);
                 if (found) {
@@ -499,6 +558,13 @@
             input.value = '';
             renderMessages();
             renderChats();
+        }
+
+        function triggerPanicWipe() {
+            if (confirm("PANIC WIPE: Delete all message logs in this channel permanently?")) {
+                mockMessages[activeChatId] = [];
+                renderMessages();
+            }
         }
 
         function escapeHtml(text) {
