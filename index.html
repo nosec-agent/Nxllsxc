@@ -1,323 +1,228 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vault Messenger</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoSec-Ware // Secure Terminal</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --accent-green: #2ea44f;
+            --accent-red: #da3633;
+            --accent-blue: #58a6ff;
+            --font-mono: 'Courier New', Courier, monospace;
+        }
 
-    body {
-      background-color: #08080c;
-      color: #e0e0e0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
 
-    .card {
-      background: #111118;
-      border: 1px solid #222230;
-      border-radius: 12px;
-      padding: 24px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      text-align: center;
-    }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-    h2 {
-      font-size: 1.4rem;
-      margin-bottom: 8px;
-      color: #00ffcc;
-      letter-spacing: 1px;
-    }
+        header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    p.subtitle {
-      font-size: 0.85rem;
-      color: #888899;
-      margin-bottom: 20px;
-    }
+        .status-badge {
+            background-color: var(--accent-green);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
 
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 12px;
-      background: #09090d;
-      border: 1px solid #2a2a3a;
-      border-radius: 6px;
-      color: #00ffcc;
-      font-size: 1rem;
-      text-align: center;
-      outline: none;
-    }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
 
-    input:focus {
-      border-color: #00ffcc;
-    }
+        @media (max-width: 700px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #00ffcc;
-      color: #000;
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+        }
 
-    button:hover {
-      background: #00cca3;
-    }
+        .panel h3 {
+            margin-top: 0;
+            font-size: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
 
-    .error {
-      color: #ff4444;
-      font-size: 0.85rem;
-      margin-top: 10px;
-      display: none;
-    }
+        .log-area {
+            flex: 1;
+            background-color: #000;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-    /* CHAT INTERFACE */
-    #chat-screen {
-      display: none;
-      width: 100vw;
-      height: 100vh;
-      flex-direction: column;
-      background: #08080c;
-    }
+        .log-entry {
+            word-break: break-all;
+        }
 
-    .chat-header {
-      background: #111118;
-      border-bottom: 1px solid #222230;
-      padding: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        .log-entry.system { color: var(--accent-blue); }
+        .log-entry.success { color: var(--accent-green); }
+        .log-entry.hack { color: var(--accent-red); }
 
-    .chat-header h3 {
-      color: #00ffcc;
-      font-size: 1.1rem;
-    }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
 
-    .status-badge {
-      font-size: 0.75rem;
-      background: rgba(0, 255, 204, 0.1);
-      color: #00ffcc;
-      padding: 4px 8px;
-      border-radius: 12px;
-      border: 1px solid rgba(0, 255, 204, 0.3);
-    }
+        input[type="text"] {
+            flex: 1;
+            background: #000;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+        }
 
-    .chat-messages {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+        button {
+            background-color: var(--border-color);
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-weight: bold;
+        }
 
-    .message {
-      max-width: 75%;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      line-height: 1.4;
-      position: relative;
-      word-break: break-word;
-    }
+        button:hover {
+            opacity: 0.8;
+        }
 
-    .message.sent {
-      align-self: flex-end;
-      background: #00ffcc;
-      color: #000;
-      border-bottom-right-radius: 2px;
-    }
-
-    .message.received {
-      align-self: flex-start;
-      background: #1a1a24;
-      color: #e0e0e0;
-      border: 1px solid #2a2a3a;
-      border-bottom-left-radius: 2px;
-    }
-
-    .meta {
-      font-size: 0.65rem;
-      margin-top: 4px;
-      opacity: 0.7;
-      text-align: right;
-    }
-
-    .chat-input-area {
-      padding: 16px;
-      background: #111118;
-      border-top: 1px solid #222230;
-      display: flex;
-      gap: 10px;
-    }
-
-    .chat-input-area input {
-      margin-bottom: 0;
-      text-align: left;
-    }
-
-    .chat-input-area button {
-      width: auto;
-      padding: 0 20px;
-    }
-  </style>
+        button.btn-hack {
+            background-color: var(--accent-red);
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- SCREEN 1: SECURITY PIN -->
-  <div id="pin-screen" class="card">
-    <h2>SECURITY CLEARANCE</h2>
-    <p class="subtitle">Enter access PIN to unlock messenger</p>
-    <input type="password" id="pin-input" placeholder="Enter PIN (XX-XX-XX-XX)" maxlength="14">
-    <button onclick="checkPin()">UNLOCK</button>
-    <div id="pin-error" class="error">Invalid PIN. Access Denied.</div>
-  </div>
+<div class="container">
+    <header>
+        <div>
+            <h2 style="margin:0;">NoSec-Ware v1.0</h2>
+            <small style="color: #8b949e;">Ende-zu-Ende Verschlüsselung & Metadaten-Schutz</small>
+        </div>
+        <span class="status-badge" id="statusBadge">PROTECTED</span>
+    </header>
 
-  <!-- SCREEN 2: LOGIN / USERNAME -->
-  <div id="auth-screen" class="card" style="display: none;">
-    <h2>USER AUTHENTICATION</h2>
-    <p class="subtitle">Enter username & password</p>
-    <input type="text" id="username-input" placeholder="Username">
-    <input type="password" id="password-input" placeholder="Password">
-    <button onclick="login()">ENTER CHAT</button>
-    <div id="auth-error" class="error">Please fill in all fields.</div>
-  </div>
+    <div class="main-grid">
+        <!-- Client Chat Terminal -->
+        <div class="panel">
+            <h3>Gesicherter Client Terminal</h3>
+            <div class="log-area" id="chatLog">
+                <div class="log-entry system">[SYSTEM] NoSec-Ware Tunnel initialisiert.</div>
+                <div class="log-entry system">[SYSTEM] Schlüssel ausgetauscht (Curve25519).</div>
+            </div>
+            <div class="input-group">
+                <input type="text" id="messageInput" placeholder="Nachricht eingeben..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()">Senden</button>
+            </div>
+        </div>
 
-  <!-- SCREEN 3: SECRET CHAT -->
-  <div id="chat-screen">
-    <div class="chat-header">
-      <div>
-        <h3 id="current-user-display">Vault Chat</h3>
-        <span style="font-size: 0.75rem; color: #888;">Private Room #01</span>
-      </div>
-      <div class="status-badge">🔒 AES-256 Encrypted</div>
+        <!-- Network / Hacker Terminal -->
+        <div class="panel">
+            <h3>Netzwerk-Abhörstelle (MiTM)</h3>
+            <div class="log-area" id="hackLog">
+                <div class="log-entry system">[SNIFFER] Lausche auf Port 443 / NoSec-Relay...</div>
+            </div>
+            <button class="btn-hack" onclick="simulateHack()">Hacking-Versuch starten</button>
+        </div>
     </div>
+</div>
 
-    <div class="chat-messages" id="message-container">
-      <!-- Messages will appear here -->
-    </div>
-
-    <div class="chat-input-area">
-      <input type="text" id="message-input" placeholder="Type an encrypted message..." onkeypress="handleKeyPress(event)">
-      <button onclick="sendMessage()">SEND</button>
-    </div>
-  </div>
-
-  <script>
-    const REQUIRED_PIN = "04-01-20-11";
-    let currentUser = "";
-
-    // 1. PIN CHECK
-    function checkPin() {
-      const input = document.getElementById("pin-input").value.trim();
-      const cleanInput = input.replace(/\s+/g, '');
-      
-      if (cleanInput === REQUIRED_PIN || cleanInput === REQUIRED_PIN.replace(/-/g, '')) {
-        document.getElementById("pin-screen").style.display = "none";
-        document.getElementById("auth-screen").style.display = "block";
-      } else {
-        showError("pin-error");
-      }
+<script>
+    // Einfache Demonstration für die Verschlüsselung (Simulierter AES-GCM + Base64)
+    function fakeEncrypt(text) {
+        const dummyPadding = "PADDING_NOP_389274923847239847239847293874";
+        const combined = text + "::" + dummyPadding;
+        return btoa(unescape(encodeURIComponent(combined))).split('').reverse().join('');
     }
 
-    // 2. LOGIN
-    function login() {
-      const user = document.getElementById("username-input").value.trim();
-      const pass = document.getElementById("password-input").value.trim();
-
-      if (!user || !pass) {
-        showError("auth-error");
-        return;
-      }
-
-      currentUser = user;
-      document.getElementById("auth-screen").style.display = "none";
-      document.getElementById("chat-screen").style.display = "flex";
-      document.getElementById("current-user-display").innerText = "User: " + currentUser;
-
-      loadMessages();
-    }
-
-    // 3. MESSAGING & ENCRYPTION SIMULATION
     function sendMessage() {
-      const input = document.getElementById("message-input");
-      const text = input.value.trim();
+        const input = document.getElementById('messageInput');
+        const text = input.value.trim();
+        if (!text) return;
 
-      if (!text) return;
+        const chatLog = document.getElementById('chatLog');
+        const hackLog = document.getElementById('hackLog');
 
-      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        // Local Display
+        chatLog.innerHTML += `<div class="log-entry"><strong>Du:</strong> ${text}</div>`;
+        
+        // Encryption Process
+        const encrypted = fakeEncrypt(text);
 
-      // Save message to LocalStorage
-      const messages = JSON.parse(localStorage.getItem("vault_messages") || "[]");
-      const newMsg = { sender: currentUser, text: text, time: time };
-      messages.push(newMsg);
-      localStorage.setItem("vault_messages", JSON.stringify(messages));
+        // Network Capture (Simulation)
+        hackLog.innerHTML += `<div class="log-entry hack">[ABGEFANGEN] Paketgröße: ${encrypted.length} Bytes<br>Inhalt: ${encrypted}</div>`;
 
-      input.value = "";
-      renderMessages();
-    }
-
-    function renderMessages() {
-      const container = document.getElementById("message-container");
-      container.innerHTML = "";
-
-      const messages = JSON.parse(localStorage.getItem("vault_messages") || "[]");
-
-      if (messages.length === 0) {
-        container.innerHTML = `<div style="text-align: center; color: #555; font-size: 0.85rem; margin-top: 20px;">No messages yet. Chat is secured.</div>`;
-        return;
-      }
-
-      messages.forEach(msg => {
-        const isMe = msg.sender === currentUser;
-        const msgDiv = document.createElement("div");
-        msgDiv.className = `message ${isMe ? 'sent' : 'received'}`;
-        msgDiv.innerHTML = `
-          <div><strong>${isMe ? 'You' : msg.sender}:</strong> ${escapeHTML(msg.text)}</div>
-          <div class="meta">🔒 ${msg.time}</div>
-        `;
-        container.appendChild(msgDiv);
-      });
-
-      container.scrollTop = container.scrollHeight;
-    }
-
-    function loadMessages() {
-      renderMessages();
+        input.value = '';
+        chatLog.scrollTop = chatLog.scrollHeight;
+        hackLog.scrollTop = hackLog.scrollHeight;
     }
 
     function handleKeyPress(e) {
-      if (e.key === "Enter") sendMessage();
+        if (e.key === 'Enter') sendMessage();
     }
 
-    function showError(elementId) {
-      const err = document.getElementById(elementId);
-      err.style.display = "block";
-      setTimeout(() => err.style.display = "none", 3000);
-    }
+    function simulateHack() {
+        const hackLog = document.getElementById('hackLog');
+        const statusBadge = document.getElementById('statusBadge');
+        
+        hackLog.innerHTML += `<div class="log-entry hack">----------------------------------</div>`;
+        hackLog.innerHTML += `<div class="log-entry hack">[ANGRIFF] Versuche Brute-Force Entschlüsselung...</div>`;
 
-    function escapeHTML(str) {
-      return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-      );
+        setTimeout(() => {
+            hackLog.innerHTML += `<div class="log-entry hack">[FEHLER] Schlüssel nicht im Arbeitsspeicher gefunden (Zero-Knowledge).</div>`;
+            hackLog.innerHTML += `<div class="log-entry hack">[STATUS] Pakete sind durch Padding unlesbar (NoSec-OEC aktiv).</div>`;
+            hackLog.scrollTop = hackLog.scrollHeight;
+        }, 1200);
     }
-  </script>
+</script>
+
 </body>
 </html>
